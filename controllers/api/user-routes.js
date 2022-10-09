@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const { User, Post, Comment } = require('../../models');
+const { destroy } = require('../../models/User');
 
 // find all users
 router.get('/', (req, res) => {
@@ -96,4 +97,15 @@ router.post('/login', (req, res) => {
             res.json({ user: dbUserData, message: 'You are logged in!' });
         });
     });
+});
+
+router.post('/logout', (req, res) => {
+    if (req.session.loggedIn) {
+        req.session.destroy(() => {
+            res.status(204).end();
+        });
+    }
+    else {
+        res.status(404).end()
+    }
 });
