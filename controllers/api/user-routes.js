@@ -69,3 +69,31 @@ router.post('/', (req, res) => {
         res.status(500).json(error);
     });
 });
+
+router.post('/login', (req, res) => {
+    User.findOne({
+        where: {
+            email: req.body.email
+        }
+    })
+    .then(dbUserData => {
+        if (!dbUserData) {
+            res.status(400).json({ message: 'No user was found with that email.' });
+            return;
+        }
+        const validPassword = dbUserData.checkPassword(req.body.password);
+        if (!validPassword) {
+            res.status(400).json({ message: "The password is incorrect." });
+            return;
+        }
+
+        req.session.save(() => {
+            // declare the session varibale when logging in
+            req.session.user_id = dbUserData.id;
+            req.session.username = dbUserData.username;
+            req.session.loggedIn = true;
+
+            res.json({ user: dbUserData, message: 'You are logged in!' });
+        });
+    });
+});
