@@ -71,6 +71,7 @@ router.post('/', (req, res) => {
     });
 });
 
+// login as created user
 router.post('/login', (req, res) => {
     User.findOne({
         where: {
@@ -99,6 +100,7 @@ router.post('/login', (req, res) => {
     });
 });
 
+// log out as user
 router.post('/logout', (req, res) => {
     if (req.session.loggedIn) {
         req.session.destroy(() => {
@@ -109,3 +111,24 @@ router.post('/logout', (req, res) => {
         res.status(404).end()
     }
 });
+
+// update user 
+router.put('/:id', (req, res) => {
+    User.update(req.body, {
+        individualHooks: true,
+        where: {
+            id: req.params.id
+        }
+    })
+    .then(dbUserData => {
+        if(!dbUserData[0]) {
+            res.status(404).json({ message: 'No user found udner this id' });
+            return;
+        }
+        res.json(dbUserData);
+    })
+    .catch(error => {
+        console.log(error);
+        res.status(500).json(error);
+    });
+})
