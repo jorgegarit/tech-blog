@@ -67,3 +67,66 @@ router.get('/:id', (req, res) => {
         res.status(500).json(error);
     });
   });
+
+// create new post 
+router.post('/', withAuth, (req, res) => {
+    Post.create({
+        title: req.body.title,
+        post_content: req.body.post_content,
+        user_id: req.session.user_id
+    })
+    .then(dbPostData => res.json(dbPostData))
+    .catch(error => {
+        console.log(error);
+        res.status(500).json(error);
+    });
+});
+
+// update excisting post 
+router.put('/:id', withAuth, (req, res) => {
+    Post.update(
+        {
+            title: req.body.title,
+            post_content: req.body.post_content
+        },
+        {
+            where: {
+                id: req.params.id
+            }
+        }
+    )
+    .then(dbPostData => {
+        if (!dbPostData) {
+            res.status(404).json({ message: 'No post found under this id' });
+            return;
+        }
+        res.json(dbPostData);
+    })
+    .catch(error => {
+        console.log(error);
+        res.status(500).json(error);
+    });
+});
+
+// delete post
+router.delete('/:id', withAuth, (req, res) => {
+    Post.destroy({
+      where: {
+        id: req.params.id
+      }
+    })
+    .then(dbPostData => {
+        if (!dbPostData) {
+          res.status(404).json({ message: 'No post found under this id' });
+          return;
+        }
+        res.json(dbPostData);
+    })
+    .catch(error => {
+        console.log(error);
+        res.status(500).json(error);
+    });
+  });
+  
+
+  module.exports = router;
