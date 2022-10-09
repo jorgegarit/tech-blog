@@ -1,9 +1,11 @@
+// imports constructor for sequelize
 const Sequelize = require('sequelize');
 
 require('dotenv').config();
 
 let sequelize;
 
+// if statement for when I deploy to heroku to use heroku jaws database
 if (process.env.JAWSDB_URL) {
     sequelize = new Sequelize(process.env.JAWSDB_URL);
 } else {
