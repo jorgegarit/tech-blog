@@ -1,6 +1,5 @@
 const router = require('express').Router();
 const { User, Post, Comment } = require('../../models');
-const { destroy } = require('../../models/User');
 
 // find all users
 router.get('/', (req, res) => {
@@ -122,7 +121,7 @@ router.put('/:id', (req, res) => {
     })
     .then(dbUserData => {
         if(!dbUserData[0]) {
-            res.status(404).json({ message: 'No user found udner this id' });
+            res.status(404).json({ message: 'No user found under this id' });
             return;
         }
         res.json(dbUserData);
@@ -132,3 +131,24 @@ router.put('/:id', (req, res) => {
         res.status(500).json(error);
     });
 })
+
+router.delete('/:id', (req, res) => {
+    User.destroy({
+        where: {
+            id: req.params.id
+        }
+    })
+    .then(dbUserData => {
+        if(!dbUserData) {
+            res.status(404).json({ message: 'No user found under this id' });
+            return;
+        }
+        res.json(dbUserData);
+    })
+    .catch(error => {
+        console.log(error);
+        res.status(500).json(error);
+    });
+})
+
+module.exports = router;
